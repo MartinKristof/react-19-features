@@ -12,8 +12,8 @@
     "pretty:fix": "prettier --write .",
     "pretty": "prettier --check .",
     "qa": "yarn lint && yarn pretty",
-    "backend": "json-server --watch db.json --port 3030",
-    "backend:delayed": "json-server --watch db.json --port 3030 --delay 1500",
+    "backend": "json-server --watch db.json --port 3030 --middlewares fakeErrorMiddleware.cjs",
+    "backend:delayed": "json-server --watch db.json --port 3030  --middlewares fakeErrorMiddleware.cjs --delay 1500",
     "prepare": "husky"
   },
   "dependencies": {
