@@ -84,6 +84,7 @@ export const PostsWithUseOptimistic = () => {
 
         setName('');
         setText('');
+        setApiError('');
       } catch (error) {
         setApiError(`Failed to add post: ${error instanceof Error ? error.message : 'Unknown error'}`);
       }

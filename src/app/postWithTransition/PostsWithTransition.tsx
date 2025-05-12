@@ -70,6 +70,7 @@ export const PostsWithTransition = () => {
 
         setNameValue('');
         setTextValue('');
+        setApiError('');
       } catch (error) {
         setApiError(`Failed to add post: ${error instanceof Error ? error.message : 'Unknown error'}`);
       }
