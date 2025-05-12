@@ -6,9 +6,7 @@ import { getUrl } from '../utils/getUrl';
 import { z } from 'zod';
 import classNames from 'classnames';
 import { ErrorMessage } from '../components/ErrorMessage';
-
-const FIELD_CLASS_NAME =
-  'w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500';
+import { Input } from '../components/Input';
 
 const postsSchema = z.object({
   name: z.string().trim().min(3, 'Name must be at least 3 characters long').nonempty('Name is required'),
@@ -101,23 +99,22 @@ export const Posts = () => {
         {apiError && <ErrorMessage>{apiError}</ErrorMessage>}
         <div>
           <FormGroup label="Your name" id="name" errors={nameErrors}>
-            <input
-              className={FIELD_CLASS_NAME}
+            <Input
               id="name"
               type="text"
               name="name"
               value={nameValue}
-              onChange={e => setNameValue(e.target.value)}
+              onChange={event => setNameValue(event.target.value)}
               placeholder="Some Name"
             />
           </FormGroup>
           <FormGroup label="Your post" id="text" errors={textErrors}>
-            <textarea
-              className={FIELD_CLASS_NAME}
+            <Input
+              variant="textarea"
               id="text"
               name="text"
               value={textValue}
-              onChange={e => setTextValue(e.target.value)}
+              onChange={event => setTextValue(event.target.value)}
               placeholder="Some post"
               rows={4}
             />

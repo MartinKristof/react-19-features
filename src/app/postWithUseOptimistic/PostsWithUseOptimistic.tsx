@@ -1,4 +1,4 @@
-import { useState, useEffect, FormEvent, useTransition, useOptimistic } from 'react';
+import { useState, useEffect, FormEvent, useTransition, useOptimistic, useRef } from 'react';
 import { FormGroup } from '../components/FormGroup';
 import { TPost } from '../types';
 import { PostList } from '../components/PostList';
@@ -6,9 +6,7 @@ import { getUrl } from '../utils/getUrl';
 import { z } from 'zod';
 import classNames from 'classnames';
 import { ErrorMessage } from '../components/ErrorMessage';
-
-const FIELD_CLASS_NAME =
-  'w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500';
+import { Input } from '../components/Input';
 
 const postsSchema = z.object({
   name: z.string().trim().min(3, 'Name must be at least 3 characters long').nonempty('Name is required'),
@@ -36,8 +34,8 @@ const addPost = async (name: string, text: string, publishedAt: number) => {
 
 export const PostsWithUseOptimistic = () => {
   const [posts, setPosts] = useState<TPost[]>([]);
-  const [name, setName] = useState('');
-  const [text, setText] = useState('');
+  const nameRef = useRef<HTMLInputElement>(null);
+  const textRef = useRef<HTMLTextAreaElement>(null);
   const [{ nameErrors, textErrors }, setErrors] = useState<{ nameErrors: string[]; textErrors: string[] }>({
     nameErrors: [],
     textErrors: [],
@@ -53,6 +51,8 @@ export const PostsWithUseOptimistic = () => {
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    const name = nameRef.current?.value || '';
+    const text = textRef.current?.value || '';
 
     const parsed = postsSchema.safeParse({ name, text });
 
@@ -82,8 +82,13 @@ export const PostsWithUseOptimistic = () => {
         await addPost(name, text, publishedAt);
         setPosts(await getPosts());
 
-        setName('');
-        setText('');
+        if (nameRef.current) {
+          nameRef.current.value = '';
+        }
+        if (textRef.current) {
+          textRef.current.value = '';
+        }
+
         setApiError('');
       } catch (error) {
         setApiError(`Failed to add post: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -114,26 +119,10 @@ export const PostsWithUseOptimistic = () => {
         {apiError && <ErrorMessage>{apiError}</ErrorMessage>}
         <div>
           <FormGroup label="Your name" id="name" errors={nameErrors}>
-            <input
-              className={FIELD_CLASS_NAME}
-              id="name"
-              type="text"
-              name="name"
-              value={name}
-              onChange={event => setName(event.target.value)}
-              placeholder="Some Name"
-            />
+            <Input ref={nameRef} id="name" type="text" name="name" placeholder="Some Name" />
           </FormGroup>
           <FormGroup label="Your post" id="text" errors={textErrors}>
-            <textarea
-              className={FIELD_CLASS_NAME}
-              id="text"
-              name="text"
-              value={text}
-              onChange={event => setText(event.target.value)}
-              placeholder="Some post"
-              rows={4}
-            />
+            <Input variant="textarea" ref={textRef} id="text" name="text" placeholder="Some post" rows={4} />
           </FormGroup>
         </div>
         <div className="mt-2">

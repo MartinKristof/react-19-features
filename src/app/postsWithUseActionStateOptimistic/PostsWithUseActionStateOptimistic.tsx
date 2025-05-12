@@ -6,9 +6,7 @@ import { getUrl } from '../utils/getUrl';
 import { z } from 'zod';
 import { ErrorMessage } from '../components/ErrorMessage';
 import { SubmitButton } from '../components/SubmitButton';
-
-const FIELD_CLASS_NAME =
-  'w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500';
+import { Input } from '../components/Input';
 
 const postsSchema = z.object({
   name: z.string().trim().min(3, 'Name must be at least 3 characters long').nonempty('Name is required'),
@@ -123,24 +121,10 @@ export const PostsWithUseActionStateOptimistic = () => {
         {(apiError || globalError) && <ErrorMessage>{apiError || globalError}</ErrorMessage>}
         <div>
           <FormGroup label="Your name" id="name" errors={nameErrors}>
-            <input
-              className={FIELD_CLASS_NAME}
-              id="name"
-              type="text"
-              name="name"
-              defaultValue={nameValue}
-              placeholder="Some Name"
-            />
+            <Input id="name" type="text" name="name" defaultValue={nameValue} placeholder="Some Name" />
           </FormGroup>
           <FormGroup label="Your post" id="text" errors={textErrors}>
-            <textarea
-              className={FIELD_CLASS_NAME}
-              id="text"
-              name="text"
-              defaultValue={textValue}
-              placeholder="Some post"
-              rows={4}
-            />
+            <Input variant="textarea" id="text" name="text" defaultValue={textValue} placeholder="Some post" rows={4} />
           </FormGroup>
         </div>
         <div className="mt-2">
