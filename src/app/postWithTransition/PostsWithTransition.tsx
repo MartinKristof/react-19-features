@@ -1,5 +1,4 @@
 import { useState, useEffect, FormEvent, useTransition, useRef } from 'react';
-import { Sparkles } from 'lucide-react';
 import { z } from 'zod';
 import { FormGroup } from '../components/FormGroup';
 import { TPost } from '../types';
@@ -12,6 +11,7 @@ import { Form } from '../components/Form';
 import { Box } from '../components/Box';
 import { Button } from '../components/Button';
 import { PostsListWrapper } from '../components/PostsListWrapper';
+import { Title } from '../components/Title';
 
 const postsSchema = z.object({
   name: z.string().trim().min(3, 'Name must be at least 3 characters long').nonempty('Name is required'),
@@ -104,13 +104,10 @@ export const PostsWithTransition = () => {
 
   return (
     <div className="p-6 max-w-4xl mx-auto w-full">
-      <title>{`Posts - ${posts.length ? `See ${posts.length} posts` : 'No Posts'}`}</title>
+      <title>{`Posts with transition - ${posts.length ? `See ${posts.length} posts` : 'No Posts'}`}</title>
       <Box>
         <Form onSubmit={handleSubmit}>
-          <h2 className="text-xl font-semibold mb-4 text-gray-800 flex items-center">
-            <Sparkles className="w-5 h-5 mr-2 text-[#FFC600]" />
-            Create a New Post
-          </h2>
+          <Title />
           {apiError && (
             <div className="mb-4">
               <ErrorMessage>{apiError}</ErrorMessage>
