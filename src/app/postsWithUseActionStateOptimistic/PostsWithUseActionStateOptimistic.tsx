@@ -1,12 +1,17 @@
 import { useState, useEffect, useActionState, useOptimistic } from 'react';
+import { z } from 'zod';
 import { FormGroup } from '../components/FormGroup';
 import { TPost } from '../types';
 import { PostList } from '../components/PostList';
 import { getUrl } from '../utils/getUrl';
-import { z } from 'zod';
 import { ErrorMessage } from '../components/ErrorMessage';
 import { SubmitButton } from '../components/SubmitButton';
 import { Input } from '../components/Input';
+import { Spinner } from '../components/Spinner';
+import { Form } from '../components/Form';
+import { Box } from '../components/Box';
+import { PostsListWrapper } from '../components/PostsListWrapper';
+import { Title } from '../components/Title';
 
 const postsSchema = z.object({
   name: z.string().trim().min(3, 'Name must be at least 3 characters long').nonempty('Name is required'),
@@ -37,7 +42,7 @@ export const PostsWithUseActionStateOptimistic = () => {
   const [apiError, setApiError] = useState('');
   const [optimisticPosts, setOptimisticPosts] = useOptimistic(posts);
   const [isLoading, setIsLoading] = useState(true);
-  const [state, submitForm, isPending] = useActionState<
+  const [state, submitForm] = useActionState<
     {
       nameErrors: string[];
       textErrors: string[];
@@ -98,7 +103,6 @@ export const PostsWithUseActionStateOptimistic = () => {
   const { nameErrors, textErrors, globalError, name: nameValue, text: textValue } = state;
 
   const fetchData = async () => {
-    setIsLoading(true);
     try {
       const data = await getPosts();
 
@@ -115,26 +119,48 @@ export const PostsWithUseActionStateOptimistic = () => {
   }, []);
 
   return (
-    <>
-      <title>{`Posts - ${optimisticPosts.length ? `See ${optimisticPosts.length} posts` : 'No Posts'}`}</title>
-      <form action={submitForm}>
-        {(apiError || globalError) && <ErrorMessage>{apiError || globalError}</ErrorMessage>}
-        <div>
-          <FormGroup label="Your name" id="name" errors={nameErrors}>
-            <Input id="name" type="text" name="name" defaultValue={nameValue} placeholder="Some Name" />
-          </FormGroup>
-          <FormGroup label="Your post" id="text" errors={textErrors}>
-            <Input variant="textarea" id="text" name="text" defaultValue={textValue} placeholder="Some post" rows={4} />
-          </FormGroup>
-        </div>
-        <div className="mt-2">
-          <SubmitButton>Add Post</SubmitButton>
-        </div>
-      </form>
-      <section className="space-y-4">
-        {(isPending || isLoading) && <div>Loading...</div>}
-        {optimisticPosts.length > 0 && <PostList posts={optimisticPosts} />}
-      </section>
-    </>
+    <div className="p-6 max-w-4xl mx-auto w-full">
+      <title>{`Posts with use action state optimistic - ${optimisticPosts.length ? `See ${optimisticPosts.length} posts` : 'No Posts'}`}</title>
+      <Box>
+        <Form action={submitForm}>
+          <Title />
+          {(apiError || globalError) && (
+            <div className="mb-4">
+              <ErrorMessage>{apiError || globalError}</ErrorMessage>
+            </div>
+          )}
+          <div>
+            <FormGroup label="Your name" id="name" errors={nameErrors}>
+              <Input
+                id="name"
+                type="text"
+                name="name"
+                defaultValue={nameValue}
+                placeholder="Some Name"
+                invalid={nameErrors.length > 0}
+              />
+            </FormGroup>
+            <FormGroup label="Your post" id="text" errors={textErrors}>
+              <Input
+                variant="textarea"
+                id="text"
+                name="text"
+                defaultValue={textValue}
+                placeholder="Some post"
+                rows={4}
+                invalid={textErrors.length > 0}
+              />
+            </FormGroup>
+          </div>
+          <div className="mt-2">
+            <SubmitButton />
+          </div>
+        </Form>
+      </Box>
+      <PostsListWrapper>
+        {isLoading && <Spinner />}
+        <PostList posts={optimisticPosts} isLoading={isLoading} />
+      </PostsListWrapper>
+    </div>
   );
 };

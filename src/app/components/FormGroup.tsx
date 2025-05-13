@@ -9,10 +9,16 @@ interface IFormGroupProps {
 }
 
 export const FormGroup: FC<IFormGroupProps> = ({ id, children, label = 'Your input', errors }) => (
-  <div className="mt-2">
-    <label htmlFor={id} className="block mb-2 text-sm font-medium">
+  <div className="mb-4">
+    <label htmlFor={id} className="block text-sm font-medium text-gray-700 mb-2">
       {label}:{children}
     </label>
-    {errors && errors.length > 0 && errors.map(error => <ErrorMessage key={error}>{error}</ErrorMessage>)}
+    {errors && errors.length > 0 && (
+      <div className="min-h-[24px] mt-1">
+        {errors.map(error => (
+          <ErrorMessage key={error}>{error}</ErrorMessage>
+        ))}
+      </div>
+    )}
   </div>
 );

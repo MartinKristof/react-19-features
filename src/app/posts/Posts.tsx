@@ -1,12 +1,17 @@
 import { useState, useEffect, FormEvent } from 'react';
+import { z } from 'zod';
 import { FormGroup } from '../components/FormGroup';
 import { TPost } from '../types';
 import { PostList } from '../components/PostList';
 import { getUrl } from '../utils/getUrl';
-import { z } from 'zod';
-import classNames from 'classnames';
 import { ErrorMessage } from '../components/ErrorMessage';
 import { Input } from '../components/Input';
+import { Spinner } from '../components/Spinner';
+import { Form } from '../components/Form';
+import { Box } from '../components/Box';
+import { Button } from '../components/Button';
+import { PostsListWrapper } from '../components/PostsListWrapper';
+import { Title } from '../components/Title';
 
 const postsSchema = z.object({
   name: z.string().trim().min(3, 'Name must be at least 3 characters long').nonempty('Name is required'),
@@ -78,7 +83,6 @@ export const Posts = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      setIsLoading(true);
       try {
         const data = await getPosts();
 
@@ -93,50 +97,50 @@ export const Posts = () => {
   }, []);
 
   return (
-    <>
+    <div className="p-6 max-w-4xl mx-auto w-full">
       <title>{`Posts - ${posts.length ? `See ${posts.length} posts` : 'No Posts'}`}</title>
-      <form onSubmit={handleSubmit}>
-        {apiError && <ErrorMessage>{apiError}</ErrorMessage>}
-        <div>
-          <FormGroup label="Your name" id="name" errors={nameErrors}>
-            <Input
-              id="name"
-              type="text"
-              name="name"
-              value={nameValue}
-              onChange={event => setNameValue(event.target.value)}
-              placeholder="Some Name"
-            />
-          </FormGroup>
-          <FormGroup label="Your post" id="text" errors={textErrors}>
-            <Input
-              variant="textarea"
-              id="text"
-              name="text"
-              value={textValue}
-              onChange={event => setTextValue(event.target.value)}
-              placeholder="Some post"
-              rows={4}
-            />
-          </FormGroup>
-        </div>
-        <div className="mt-2">
-          <button
-            type="submit"
-            className={classNames(
-              'font-bold text-white py-3 px-6 w-fit',
-              { 'bg-green-600': !isPending },
-              { 'bg-gray-400': isPending },
-            )}
-          >
-            Add Post
-          </button>
-        </div>
-      </form>
-      <section className="space-y-4">
-        {(isLoading || isPending) && <div>Loading...</div>}
-        {posts.length > 0 && <PostList posts={posts} />}
-      </section>
-    </>
+      <Box>
+        <Form onSubmit={handleSubmit}>
+          <Title />
+          {apiError && (
+            <div className="mb-4">
+              <ErrorMessage>{apiError}</ErrorMessage>
+            </div>
+          )}
+          <div>
+            <FormGroup label="Your name" id="name" errors={nameErrors}>
+              <Input
+                id="name"
+                type="text"
+                name="name"
+                value={nameValue}
+                onChange={event => setNameValue(event.target.value)}
+                placeholder="Some Name"
+                invalid={nameErrors.length > 0}
+              />
+            </FormGroup>
+            <FormGroup label="Your post" id="text" errors={textErrors}>
+              <Input
+                variant="textarea"
+                id="text"
+                name="text"
+                value={textValue}
+                onChange={event => setTextValue(event.target.value)}
+                placeholder="Some post"
+                rows={4}
+                invalid={textErrors.length > 0}
+              />
+            </FormGroup>
+          </div>
+          <div className="mt-2">
+            <Button isPending={isPending} />
+          </div>
+        </Form>
+      </Box>
+      <PostsListWrapper>
+        {isLoading && <Spinner />}
+        <PostList posts={posts} isLoading={isLoading} />
+      </PostsListWrapper>
+    </div>
   );
 };
