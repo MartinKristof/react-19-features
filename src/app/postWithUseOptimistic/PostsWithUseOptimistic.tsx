@@ -37,6 +37,16 @@ const addPost = async (name: string, text: string, publishedAt: number) => {
   return await response.json();
 };
 
+/**
+  Run delayed server
+  Show in a browser
+  Show states and ref for form (different)
+  Show Form component
+  Show useOptimistic
+  Show the transition - Action with setOptimisticPosts and the alternative
+  Show rendering PostList
+  Show title
+ */
 export const PostsWithUseOptimistic = () => {
   const [posts, setPosts] = useState<TPost[]>([]);
   const formRef = useRef<HTMLFormElement>(null);
@@ -46,9 +56,9 @@ export const PostsWithUseOptimistic = () => {
   });
   const [apiError, setApiError] = useState('');
   const [optimisticPosts, setOptimisticPosts] = useOptimistic(posts);
-  // const [optimisticPosts, setOptimisticPosts] = useOptimistic(posts, prev => [
-  //   { id: prev.length + 1, name, text, publishedAt: new Date().getTime() },
-  //   ...prev,
+  // const [optimisticPosts, setOptimisticPosts] = useOptimistic(posts, (currentPosts, { name, text, publishedAt }) => [
+  //   { id: currentPosts.length + 1, name, text, publishedAt },
+  //   ...currentPosts,
   // ]);
   const [isPending, startTransition] = useTransition();
   const [isLoading, setIsLoading] = useState(true);
@@ -83,7 +93,6 @@ export const PostsWithUseOptimistic = () => {
       setOptimisticPosts(currentPosts => [{ id: currentPosts.length + 1, name, text, publishedAt }, ...currentPosts]);
 
       // setOptimisticPosts({
-      //   id: posts.length + 1,
       //   name,
       //   text,
       //   publishedAt,

@@ -37,6 +37,12 @@ const addPost = async (name: string, text: string, publishedAt: number) => {
   return await response.json();
 };
 
+/**
+  Show in a browser
+  Show setOptimisticPosts
+  Show SubmitButton and useFormStatus
+  Show title
+ */
 export const PostsWithUseActionStateOptimistic = () => {
   const [posts, setPosts] = useState<TPost[]>([]);
   const [apiError, setApiError] = useState('');

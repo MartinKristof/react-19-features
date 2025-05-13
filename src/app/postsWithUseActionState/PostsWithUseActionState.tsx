@@ -37,6 +37,16 @@ const addPost = async (name: string, text: string) => {
   return await response.json();
 };
 
+/**
+  Show in a browser
+  Show useActionState
+  Show default state
+  Show form action
+  Show isPending
+  Show destructuring of form state
+  Show globalError
+  Show title
+ */
 export const PostWithUseActionState = () => {
   const [posts, setPosts] = useState<TPost[]>([]);
   const [apiError, setApiError] = useState('');

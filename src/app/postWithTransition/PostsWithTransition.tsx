@@ -37,6 +37,14 @@ const addPost = async (name: string, text: string) => {
   return await response.json();
 };
 
+/**
+  Show in a browser
+  Show states and refs
+  Show Input component
+  Show the transition - Action
+  Show isPending
+  Show title
+ */
 export const PostsWithTransition = () => {
   const [posts, setPosts] = useState<TPost[]>([]);
   const nameRef = useRef<HTMLInputElement>(null);

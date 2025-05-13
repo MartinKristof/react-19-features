@@ -37,6 +37,16 @@ const addPost = async (name: string, text: string) => {
   return await response.json();
 };
 
+/**
+  Show in a browser
+  Show compiled components
+  Show states for form elements
+  Show data fetching in useEffect
+  Highlight handling states for pending in async handleSubmit
+  Show validation with zod
+  Show render
+  Show title
+ */
 export const Posts = () => {
   const [posts, setPosts] = useState<TPost[]>([]);
   const [nameValue, setNameValue] = useState('');
