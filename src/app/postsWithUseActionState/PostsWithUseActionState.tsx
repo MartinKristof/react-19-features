@@ -1,12 +1,17 @@
 import { useState, useEffect, useActionState } from 'react';
+import { Sparkles } from 'lucide-react';
+import { z } from 'zod';
 import { FormGroup } from '../components/FormGroup';
 import { TPost } from '../types';
 import { PostList } from '../components/PostList';
 import { getUrl } from '../utils/getUrl';
-import { z } from 'zod';
-import classNames from 'classnames';
 import { ErrorMessage } from '../components/ErrorMessage';
 import { Input } from '../components/Input';
+import { Spinner } from '../components/Spinner';
+import { Form } from '../components/Form';
+import { Box } from '../components/Box';
+import { Button } from '../components/Button';
+import { PostsListWrapper } from '../components/PostsListWrapper';
 
 const postsSchema = z.object({
   name: z.string().trim().min(3, 'Name must be at least 3 characters long').nonempty('Name is required'),
@@ -91,7 +96,6 @@ export const PostWithUseActionState = () => {
   const { nameErrors, textErrors, globalError, name: nameValue, text: textValue } = state;
 
   const fetchData = async () => {
-    setIsLoading(true);
     try {
       const data = await getPosts();
 
@@ -108,35 +112,51 @@ export const PostWithUseActionState = () => {
   }, []);
 
   return (
-    <>
+    <div className="p-6 max-w-4xl mx-auto w-full">
       <title>{`Posts - ${posts.length ? `See ${posts.length} posts` : 'No Posts'}`}</title>
-      <form action={submitForm}>
-        {(apiError || globalError) && <ErrorMessage>{apiError || globalError}</ErrorMessage>}
-        <div>
-          <FormGroup label="Your name" id="name" errors={nameErrors}>
-            <Input id="name" type="text" name="name" defaultValue={nameValue} placeholder="Some Name" />
-          </FormGroup>
-          <FormGroup label="Your post" id="text" errors={textErrors}>
-            <Input variant="textarea" id="text" name="text" defaultValue={textValue} placeholder="Some post" rows={4} />
-          </FormGroup>
-        </div>
-        <div className="mt-2">
-          <button
-            type="submit"
-            className={classNames(
-              'font-bold text-white py-3 px-6 w-fit',
-              { 'bg-green-600': !isPending },
-              { 'bg-gray-400': isPending },
-            )}
-          >
-            Add Post
-          </button>
-        </div>
-      </form>
-      <section className="space-y-4">
-        {(isPending || isLoading) && <div>Loading...</div>}
-        {posts.length > 0 && <PostList posts={posts} />}
-      </section>
-    </>
+      <Box>
+        <Form action={submitForm}>
+          <h2 className="text-xl font-semibold mb-4 text-gray-800 flex items-center">
+            <Sparkles className="w-5 h-5 mr-2 text-[#FFC600]" />
+            Create a New Post
+          </h2>
+          {(apiError || globalError) && (
+            <div className="mb-4">
+              <ErrorMessage>{apiError || globalError}</ErrorMessage>
+            </div>
+          )}
+          <div>
+            <FormGroup label="Your name" id="name" errors={nameErrors}>
+              <Input
+                id="name"
+                type="text"
+                name="name"
+                defaultValue={nameValue}
+                placeholder="Some Name"
+                invalid={nameErrors.length > 0}
+              />
+            </FormGroup>
+            <FormGroup label="Your post" id="text" errors={textErrors}>
+              <Input
+                variant="textarea"
+                id="text"
+                name="text"
+                defaultValue={textValue}
+                placeholder="Some post"
+                rows={4}
+                invalid={textErrors.length > 0}
+              />
+            </FormGroup>
+          </div>
+          <div className="mt-2">
+            <Button isPending={isPending} />
+          </div>
+        </Form>
+      </Box>
+      <PostsListWrapper>
+        {isLoading && <Spinner />}
+        <PostList posts={posts} isLoading={isLoading} />
+      </PostsListWrapper>
+    </div>
   );
 };

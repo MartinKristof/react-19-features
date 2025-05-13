@@ -1,12 +1,17 @@
 import { useState, useEffect, FormEvent, useTransition, useOptimistic, useRef } from 'react';
+import { Sparkles } from 'lucide-react';
+import { z } from 'zod';
 import { FormGroup } from '../components/FormGroup';
 import { TPost } from '../types';
 import { PostList } from '../components/PostList';
 import { getUrl } from '../utils/getUrl';
-import { z } from 'zod';
-import classNames from 'classnames';
 import { ErrorMessage } from '../components/ErrorMessage';
 import { Input } from '../components/Input';
+import { Spinner } from '../components/Spinner';
+import { Form } from '../components/Form';
+import { Box } from '../components/Box';
+import { Button } from '../components/Button';
+import { PostsListWrapper } from '../components/PostsListWrapper';
 
 const postsSchema = z.object({
   name: z.string().trim().min(3, 'Name must be at least 3 characters long').nonempty('Name is required'),
@@ -34,8 +39,7 @@ const addPost = async (name: string, text: string, publishedAt: number) => {
 
 export const PostsWithUseOptimistic = () => {
   const [posts, setPosts] = useState<TPost[]>([]);
-  const nameRef = useRef<HTMLInputElement>(null);
-  const textRef = useRef<HTMLTextAreaElement>(null);
+  const formRef = useRef<HTMLFormElement>(null);
   const [{ nameErrors, textErrors }, setErrors] = useState<{ nameErrors: string[]; textErrors: string[] }>({
     nameErrors: [],
     textErrors: [],
@@ -51,8 +55,14 @@ export const PostsWithUseOptimistic = () => {
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const name = nameRef.current?.value || '';
-    const text = textRef.current?.value || '';
+
+    if (!formRef.current) {
+      return;
+    }
+
+    const formData = new FormData(formRef.current);
+    const name = formData.get('name') as string;
+    const text = formData.get('text') as string;
 
     const parsed = postsSchema.safeParse({ name, text });
 
@@ -82,12 +92,7 @@ export const PostsWithUseOptimistic = () => {
         await addPost(name, text, publishedAt);
         setPosts(await getPosts());
 
-        if (nameRef.current) {
-          nameRef.current.value = '';
-        }
-        if (textRef.current) {
-          textRef.current.value = '';
-        }
+        formRef.current?.reset();
 
         setApiError('');
       } catch (error) {
@@ -98,7 +103,6 @@ export const PostsWithUseOptimistic = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      setIsLoading(true);
       try {
         const data = await getPosts();
 
@@ -113,35 +117,43 @@ export const PostsWithUseOptimistic = () => {
   }, []);
 
   return (
-    <>
+    <div className="p-6 max-w-4xl mx-auto w-full">
       <title>{`Posts - ${optimisticPosts.length ? `See ${optimisticPosts.length} posts` : 'No Posts'}`}</title>
-      <form onSubmit={handleSubmit}>
-        {apiError && <ErrorMessage>{apiError}</ErrorMessage>}
-        <div>
-          <FormGroup label="Your name" id="name" errors={nameErrors}>
-            <Input ref={nameRef} id="name" type="text" name="name" placeholder="Some Name" />
-          </FormGroup>
-          <FormGroup label="Your post" id="text" errors={textErrors}>
-            <Input variant="textarea" ref={textRef} id="text" name="text" placeholder="Some post" rows={4} />
-          </FormGroup>
-        </div>
-        <div className="mt-2">
-          <button
-            type="submit"
-            className={classNames(
-              'font-bold text-white py-3 px-6 w-fit',
-              { 'bg-green-600': !isPending },
-              { 'bg-gray-400': isPending },
-            )}
-          >
-            Add Post
-          </button>
-        </div>
-      </form>
-      <section className="space-y-4">
-        {(isPending || isLoading) && <div>Loading...</div>}
-        {optimisticPosts.length > 0 && <PostList posts={optimisticPosts} />}
-      </section>
-    </>
+      <Box>
+        <Form onSubmit={handleSubmit} ref={formRef}>
+          <h2 className="text-xl font-semibold mb-4 text-gray-800 flex items-center">
+            <Sparkles className="w-5 h-5 mr-2 text-[#FFC600]" />
+            Create a New Post
+          </h2>
+          {apiError && (
+            <div className="mb-4">
+              <ErrorMessage>{apiError}</ErrorMessage>
+            </div>
+          )}
+          <div>
+            <FormGroup label="Your name" id="name" errors={nameErrors}>
+              <Input id="name" type="text" name="name" placeholder="Some Name" invalid={nameErrors.length > 0} />
+            </FormGroup>
+            <FormGroup label="Your post" id="text" errors={textErrors}>
+              <Input
+                variant="textarea"
+                id="text"
+                name="text"
+                placeholder="Some post"
+                rows={4}
+                invalid={textErrors.length > 0}
+              />
+            </FormGroup>
+          </div>
+          <div className="mt-2">
+            <Button isPending={isPending} />
+          </div>
+        </Form>
+      </Box>
+      <PostsListWrapper>
+        {isLoading && <Spinner />}
+        <PostList posts={optimisticPosts} isLoading={isLoading} />
+      </PostsListWrapper>
+    </div>
   );
 };

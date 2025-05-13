@@ -1,29 +1,11 @@
-import { FC, ReactNode } from 'react';
+import { FC } from 'react';
 
 import { useFormStatus } from 'react-dom';
 
-import classNames from 'classnames';
+import { Button } from './Button';
 
-interface IButtonProps {
-  children: ReactNode;
-}
-
-export const SubmitButton: FC<IButtonProps> = ({ children }) => {
+export const SubmitButton: FC = () => {
   const { pending } = useFormStatus();
 
-  return (
-    <button
-      type="submit"
-      disabled={pending}
-      className={classNames(
-        'font-bold text-white py-3 px-6 w-fit',
-
-        { 'bg-green-600': !pending },
-
-        { 'bg-gray-400': pending },
-      )}
-    >
-      {children}
-    </button>
-  );
+  return <Button isPending={pending} />;
 };
