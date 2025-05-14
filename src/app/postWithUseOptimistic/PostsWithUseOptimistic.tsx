@@ -12,6 +12,7 @@ import { Box } from '../components/Box';
 import { Button } from '../components/Button';
 import { PostsListWrapper } from '../components/PostsListWrapper';
 import { Title } from '../components/Title';
+import { Container } from '../components/Container';
 
 const postsSchema = z.object({
   name: z.string().trim().min(3, 'Name must be at least 3 characters long').nonempty('Name is required'),
@@ -126,7 +127,7 @@ export const PostsWithUseOptimistic = () => {
   }, []);
 
   return (
-    <div className="p-6 max-w-4xl mx-auto w-full">
+    <Container>
       <title>{`Posts with use optimistic - ${optimisticPosts.length ? `See ${optimisticPosts.length} posts` : 'No Posts'}`}</title>
       <Box>
         <Form onSubmit={handleSubmit} ref={formRef}>
@@ -160,6 +161,6 @@ export const PostsWithUseOptimistic = () => {
         {isLoading && <Spinner />}
         <PostList posts={optimisticPosts} isLoading={isLoading} />
       </PostsListWrapper>
-    </div>
+    </Container>
   );
 };

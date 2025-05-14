@@ -15,13 +15,14 @@ export const Layout: FC = () => (
         animate={{ y: 0 }}
         transition={{ type: 'spring', stiffness: 100 }}
       >
-        <nav className="flex space-x-4 text-sm max-w-4xl mx-auto">
+        <nav className="flex space-x-4 text-sm max-w-5xl mx-auto">
           <ul className="flex">
             <NavItem to="/">Posts</NavItem>
             <NavItem to="/transition">Posts with transition</NavItem>
             <NavItem to="/use-optimistic">Posts with use optimistic</NavItem>
             <NavItem to="/use-action-state">Posts with use action state</NavItem>
             <NavItem to="/use-action-state-optimistic">Posts with use action state optimistic</NavItem>
+            <NavItem to="/use-use">Posts with use</NavItem>
           </ul>
         </nav>
       </motion.nav>

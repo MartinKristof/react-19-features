@@ -9,7 +9,7 @@ interface INavItemProps {
 }
 
 export const NavItem: FC<INavItemProps> = ({ children, to }) => (
-  <li className="mr-6">
+  <li className="mr-2">
     <motion.div className="relative" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
       <NavLink
         className={({ isActive }) =>

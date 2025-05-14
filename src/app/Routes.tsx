@@ -6,6 +6,9 @@ import { PostWithUseActionState } from './postsWithUseActionState/PostsWithUseAc
 import { PostsWithUseOptimistic } from './postWithUseOptimistic/PostsWithUseOptimistic';
 import { PostsWithUseActionStateOptimistic } from './postsWithUseActionStateOptimistic/PostsWithUseActionStateOptimistic';
 import { Posts } from './posts/Posts';
+import { Suspense } from 'react';
+import { PostsWithUse } from './postsWithUse/PostsWithUse';
+import { Loader } from 'lucide-react';
 
 const router = createBrowserRouter([
   {
@@ -20,6 +23,20 @@ const router = createBrowserRouter([
       { path: 'use-optimistic', element: <PostsWithUseOptimistic /> },
       { path: 'use-action-state', element: <PostWithUseActionState /> },
       { path: 'use-action-state-optimistic', element: <PostsWithUseActionStateOptimistic /> },
+      {
+        path: 'use-use',
+        element: (
+          <Suspense
+            fallback={
+              <div className="mx-auto">
+                <Loader />
+              </div>
+            }
+          >
+            <PostsWithUse />
+          </Suspense>
+        ),
+      },
       { path: '*', element: <NotFound /> },
     ],
   },
